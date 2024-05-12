@@ -3,6 +3,8 @@ local ts = vim.treesitter
 local ts_utils = require("nvim-treesitter.ts_utils")
 local M = {}
 
+local argwrap_fallback = false
+
 ---@param child TSNode
 local function find_arg_list_at_cursor(child)
 	if not child then
@@ -22,8 +24,11 @@ function M.split(node)
 	local the_node = node or ts.get_node()
 	local args = find_arg_list_at_cursor(the_node)
 	if not args then
-		-- If we can't find a suitable target for splitting, we'll fall back to ArgWrap.
-		vim.cmd(":ArgWrap")
+		if argwrap_fallback then
+			-- If we can't find a suitable target for splitting, we'll fall back to ArgWrap if it's
+			-- configured.
+			vim.cmd(":ArgWrap")
+		end
 		return
 	end
 
@@ -60,6 +65,8 @@ function M.attach(bufnr)
 	local buf = bufnr or api.nvim_get_current_buf()
 
 	local config = require("nvim-treesitter.configs").get_module("bananasplit")
+	argwrap_fallback = config.argwrap_fallback or false
+
 	for funcname, mapping in pairs(config.keymaps) do
 		api.nvim_buf_set_keymap(
 			buf,

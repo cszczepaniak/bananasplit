@@ -9,8 +9,9 @@ function M.init()
 				return lang == "go"
 			end,
 			keymaps = {
-				split = "<leader>fc",
+				split = "<leader>fl",
 			},
+			argwrap_fallback = false,
 		},
 	})
 end
