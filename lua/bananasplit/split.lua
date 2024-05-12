@@ -4,6 +4,7 @@ local ts_utils = require("nvim-treesitter.ts_utils")
 local M = {}
 
 local argwrap_fallback = false
+local auto_format = false
 
 ---@param node TSNode
 ---@return table TSNode list of children
@@ -121,7 +122,9 @@ function M.split(node)
 		txt_replacement
 	)
 
-	require("conform").format()
+	if auto_format then
+		require("conform").format()
+	end
 end
 
 function M.attach(bufnr)
@@ -129,6 +132,7 @@ function M.attach(bufnr)
 
 	local config = require("nvim-treesitter.configs").get_module("bananasplit")
 	argwrap_fallback = config.argwrap_fallback or false
+	auto_format = config.auto_format or false
 
 	for funcname, mapping in pairs(config.keymaps) do
 		api.nvim_buf_set_keymap(

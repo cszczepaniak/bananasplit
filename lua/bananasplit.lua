@@ -12,6 +12,7 @@ function M.init()
 				split = "<leader>fl",
 			},
 			argwrap_fallback = false,
+			auto_format = false,
 		},
 	})
 end

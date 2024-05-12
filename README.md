@@ -31,6 +31,7 @@ NOTE: this is in very early development and the number of languages/nodes suppor
           split = '<leader>fl',
         },
         argwrap_fallback = true,
+        auto_format = true,
       },
     }
   end,
@@ -38,6 +39,8 @@ NOTE: this is in very early development and the number of languages/nodes suppor
     'nvim-treesitter/nvim-treesitter',
     -- Required if "argwrap_fallback" is true
     'FooSoft/vim-argwrap',
+    -- Required if "auto_format" is true
+    'stevearc/conform.nvim',
   }
 }
 ```
