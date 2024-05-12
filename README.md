@@ -2,6 +2,8 @@
 A Neovim plugin to split things onto separate lines, driven by treesitter. Optional fallback to [ArgWrap]() for
 unsupported languages/TSNode types.
 
+NOTE: this is in very early development and the number of languages/nodes supported is very small.
+
 ## Supported Languages and Nodes
 - Go
   - Function Calls
@@ -63,5 +65,3 @@ func foo() {
 Using treesitter should make this much safer because it's aware of the syntax tree.
 
 Besides that, I just thought it'd be fun to learn how to use treesitter and how to write plugins.
-
-NOTE: this is in very early development and the number of languages/nodes supported is very small.
