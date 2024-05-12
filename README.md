@@ -1,8 +1,6 @@
 # bananasplit
-A Neovim plugin to split things onto separate lines. Optional fallback to [ArgWrap]() for
+A Neovim plugin to split things onto separate lines, driven by treesitter. Optional fallback to [ArgWrap]() for
 unsupported languages/TSNode types.
-
-NOTE: this is in very early development and the number of languages/nodes supported is very small.
 
 ## Supported Languages and Nodes
 - Go
@@ -41,3 +39,29 @@ NOTE: this is in very early development and the number of languages/nodes suppor
   }
 }
 ```
+
+## Why?
+I haven't found a plugin yet that does exactly what I want. Consider the following Go example:
+
+```go
+func foo() {
+  a.b.c("a", func(a, b string) {
+    return 1
+  }, "b")
+}
+```
+
+The plugins I've tried try to _toggle_ the arguments being on one line or many lines. They transform
+this example into invalid Go code:
+
+```go
+func foo() {
+  a.b.c("a", func(a, b string) {fmt.Println(a, b)return 1}, "b")
+}
+```
+
+Using treesitter should make this much safer because it's aware of the syntax tree.
+
+Besides that, I just thought it'd be fun to learn how to use treesitter and how to write plugins.
+
+NOTE: this is in very early development and the number of languages/nodes supported is very small.
