@@ -33,19 +33,6 @@ local function find_ancestor_of_type(child, type)
 end
 
 ---@param node TSNode
-local function handle_composite_literal(node)
-	local type_node = node:named_child(0)
-	if not type_node then
-		return nil
-	end
-
-	if type_node:type() == "slice_type" then
-	end
-
-	return nil
-end
-
----@param node TSNode
 local function find_splittable(node)
 	local n = find_ancestor_of_type(node, "argument_list")
 	if n then
