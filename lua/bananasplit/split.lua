@@ -34,13 +34,17 @@ end
 
 ---@param node TSNode
 local function find_splittable(node)
-	local n = find_ancestor_of_type(node, "argument_list")
+	local n = find_ancestor_of_type(node, "call_expression")
 	if n then
+		-- For call expressions, the first child is the type expression of the call, and the
+		-- second child is the arguemtn list whose children are the nodes we need to put on
+		-- new lines.
+		local args = n:named_child(1)
 		return {
 			start = "(",
 			["end"] = ")",
-			nodes = named_children(n),
-			range = ts_utils.node_to_lsp_range(n),
+			nodes = named_children(args),
+			range = ts_utils.node_to_lsp_range(args),
 		}
 	end
 
