@@ -10,11 +10,10 @@ NOTE: this is in very early development and the number of languages/nodes suppor
   - Slice/array literals
   - Map literals
   - Struct literals
+  - Function Declarations (input parameters and return parameters)
 
 #### Wishlist
-- Go
-  - Function Declarations
-- Literally every other language that exists
+- Support for other languages
 
 ## Installation
 
