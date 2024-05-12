@@ -7,13 +7,13 @@ NOTE: this is in very early development and the number of languages/nodes suppor
 ## Supported Languages and Nodes
 - Go
   - Function Calls
+  - Slice/array literals
+  - Map literals
+  - Struct literals
 
 #### Wishlist
 - Go
   - Function Declarations
-  - Slice/array literals
-  - Map literals
-  - Struct literals
 - Literally every other language that exists
 
 ## Installation
