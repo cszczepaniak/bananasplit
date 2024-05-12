@@ -62,6 +62,17 @@ local function find_splittable(node)
 		}
 	end
 
+	n = find_ancestor_of_type(node, "parameter_list")
+	if n then
+		-- For parameter lists, the children are what we want to put on new lines.
+		return {
+			start = "(",
+			["end"] = ")",
+			nodes = named_children(n),
+			range = ts_utils.node_to_lsp_range(n),
+		}
+	end
+
 	return nil
 end
 
