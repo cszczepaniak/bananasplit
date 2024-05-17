@@ -7,7 +7,7 @@ local argwrap_fallback = false
 local auto_format = false
 
 ---@param node TSNode
----@return table TSNode list of children
+---@return TSNode[] list of children
 local function named_children(node)
 	local l = {}
 	for child in node:iter_children() do
@@ -32,19 +32,41 @@ local function find_ancestor_of_type(child, type)
 	end
 end
 
+---@class Range
+---@field startLine number
+---@field startChar number
+---@field endLine number
+---@field endChar number
+
+---@param n TSNode
+---@return Range
+local function to_range(n)
+	local start_line, start_col, end_line, end_col = ts.get_node_range(n)
+	return {
+		startLine = start_line,
+		startChar = start_col,
+		endLine = end_line,
+		endChar = end_col,
+	}
+end
+
+---@class Splittable
+---@field startDelim string
+---@field endDelim string
+---@field nodes TSNode[]
+---@field range Range
+
 ---@param node TSNode
+---@return Splittable|nil
 local function find_splittable(node)
-	local n = find_ancestor_of_type(node, "call_expression")
+	local n = find_ancestor_of_type(node, "argument_list")
 	if n then
-		-- For call expressions, the first child is the type expression of the call, and the
-		-- second child is the arguemtn list whose children are the nodes we need to put on
-		-- new lines.
-		local args = n:named_child(1)
+		-- For argument lists, children are the arguments which need to be put on new lines.
 		return {
-			start = "(",
-			["end"] = ")",
-			nodes = named_children(args),
-			range = ts_utils.node_to_lsp_range(args),
+			startDelim = "(",
+			endDelim = ")",
+			nodes = named_children(n),
+			range = to_range(n),
 		}
 	end
 
@@ -55,10 +77,10 @@ local function find_splittable(node)
 		-- new lines.
 		local body = n:named_child(1)
 		return {
-			start = "{",
-			["end"] = "}",
+			startDelim = "{",
+			endDelim = "}",
 			nodes = named_children(body),
-			range = ts_utils.node_to_lsp_range(body),
+			range = to_range(body),
 		}
 	end
 
@@ -66,28 +88,14 @@ local function find_splittable(node)
 	if n then
 		-- For parameter lists, the children are what we want to put on new lines.
 		return {
-			start = "(",
-			["end"] = ")",
+			startDelim = "(",
+			endDelim = ")",
 			nodes = named_children(n),
-			range = ts_utils.node_to_lsp_range(n),
+			range = to_range(n),
 		}
 	end
 
 	return nil
-end
-
----@param child TSNode
-local function find_arg_list_at_cursor(child)
-	if not child then
-		return nil
-	end
-
-	local type = child:type()
-	if type == "argument_list" then
-		return child
-	else
-		return find_arg_list_at_cursor(child:parent())
-	end
 end
 
 ---@param node TSNode
@@ -101,7 +109,7 @@ function M.split(node)
 		return
 	end
 
-	local txt_replacement = { splittable.start }
+	local txt_replacement = { splittable.startDelim }
 
 	for _, n in ipairs(splittable.nodes) do
 		-- The neovim API for editing text rejects anything with newlines. Split each
@@ -113,14 +121,14 @@ function M.split(node)
 		txt_replacement[#txt_replacement] = txt_replacement[#txt_replacement] .. ","
 	end
 
-	txt_replacement[#txt_replacement + 1] = splittable["end"]
+	txt_replacement[#txt_replacement + 1] = splittable.endDelim
 
 	vim.api.nvim_buf_set_text(
 		0,
-		splittable.range.start.line,
-		splittable.range.start.character,
-		splittable.range["end"].line,
-		splittable.range["end"].character,
+		splittable.range.startLine,
+		splittable.range.startChar,
+		splittable.range.endLine,
+		splittable.range.endChar,
 		txt_replacement
 	)
 
